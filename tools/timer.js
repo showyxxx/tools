@@ -72,7 +72,7 @@ function updateStopwatch() {
     const milliseconds = Math.floor((stopwatchElapsedTime % 1000) / 10);
     const seconds = Math.floor((stopwatchElapsedTime / 1000) % 60);
     const minutes = Math.floor((stopwatchElapsedTime / (1000 * 60)) % 60);
-    const hours = Math.floor((stopwatchElapsedTime / (1000 * 60 * 60)) % 24);
+    const hours = Math.floor((stopwatchElapsedTime / (1000 * 60 * 60)) % 24;
     
     stopwatchDisplay.textContent = 
         `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(2, '0')}`;
@@ -91,7 +91,6 @@ const timerDisplay = document.getElementById('timer-display');
 const startTimerBtn = document.getElementById('start-timer');
 const stopTimerBtn = document.getElementById('stop-timer');
 const resetTimerBtn = document.getElementById('reset-timer');
-const alarmSound = document.getElementById('alarm-sound');
 
 let timerInterval = null;
 let timerRunning = false;
@@ -147,11 +146,6 @@ function updateTimerDisplay() {
         `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
-function playAlarm() {
-    alarmSound.currentTime = 0;
-    alarmSound.play();
-}
-
 // Обработчики событий
 startTimerBtn.addEventListener('click', startTimer);
 stopTimerBtn.addEventListener('click', stopTimer);
@@ -176,3 +170,134 @@ resetTimerBtn.addEventListener('click', resetTimer);
 
 // Инициализируем таймер при загрузке
 initTimer();
+
+// Настройки звукового сигнала
+const alarmSound = document.getElementById('alarm-sound');
+const beepSound = document.getElementById('beep-sound');
+const bellSound = document.getElementById('bell-sound');
+const soundRadios = document.querySelectorAll('input[name="alarm-sound"]');
+const customSoundInput = document.getElementById('sound-file');
+const customSoundSection = document.getElementById('custom-sound');
+const resetCustomBtn = document.getElementById('reset-custom');
+const testSoundBtn = document.getElementById('test-sound');
+
+// Текущий выбранный звук
+let currentSound = alarmSound;
+
+// Загружаем настройки звука из localStorage
+function loadSoundSettings() {
+    const savedSound = localStorage.getItem('alarmSound');
+    const customSound = localStorage.getItem('customAlarmSound');
+    
+    if (savedSound) {
+        // Выбираем сохраненный звук
+        document.querySelector(`input[value="${savedSound}"]`).checked = true;
+        selectSound(savedSound);
+        
+        // Если выбран пользовательский звук и он есть в хранилище
+        if (savedSound === 'custom' && customSound) {
+            const audio = new Audio(customSound);
+            audio.oncanplay = () => {
+                currentSound = audio;
+            };
+        }
+    }
+}
+
+// Сохраняем настройки звука в localStorage
+function saveSoundSettings(soundType) {
+    localStorage.setItem('alarmSound', soundType);
+}
+
+// Выбор звука
+function selectSound(soundType) {
+    switch(soundType) {
+        case 'default':
+            currentSound = alarmSound;
+            customSoundSection.style.display = 'none';
+            break;
+        case 'beep':
+            currentSound = beepSound;
+            customSoundSection.style.display = 'none';
+            break;
+        case 'bell':
+            currentSound = bellSound;
+            customSoundSection.style.display = 'none';
+            break;
+        case 'custom':
+            customSoundSection.style.display = 'block';
+            break;
+    }
+    
+    // Сохраняем выбор пользователя
+    saveSoundSettings(soundType);
+}
+
+// Обработка выбора звука
+soundRadios.forEach(radio => {
+    radio.addEventListener('change', () => {
+        selectSound(radio.value);
+    });
+});
+
+// Обработка загрузки пользовательского звука
+customSoundInput.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    // Проверяем тип файла
+    if (!file.type.startsWith('audio/')) {
+        alert('Пожалуйста, выберите аудиофайл');
+        return;
+    }
+    
+    // Проверяем размер файла (максимум 1 МБ)
+    if (file.size > 1024 * 1024) {
+        alert('Файл слишком большой. Максимальный размер 1 МБ.');
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        // Создаем новый аудиоэлемент
+        const audio = new Audio(e.target.result);
+        
+        // Проверяем, можно ли воспроизвести файл
+        audio.oncanplay = () => {
+            // Сохраняем пользовательский звук в localStorage
+            localStorage.setItem('customAlarmSound', e.target.result);
+            currentSound = audio;
+            alert('Пользовательский звук успешно загружен!');
+        };
+        
+        audio.onerror = () => {
+            alert('Не удалось загрузить аудиофайл. Попробуйте другой файл.');
+        };
+    };
+    
+    reader.readAsDataURL(file);
+});
+
+// Сброс пользовательского звука
+resetCustomBtn.addEventListener('click', function() {
+    localStorage.removeItem('customAlarmSound');
+    customSoundInput.value = '';
+    alert('Пользовательский звук сброшен');
+});
+
+// Проверка звука
+testSoundBtn.addEventListener('click', function() {
+    playAlarm();
+});
+
+// Воспроизведение звукового сигнала
+function playAlarm() {
+    currentSound.currentTime = 0;
+    currentSound.play().catch(e => {
+        console.error('Ошибка воспроизведения звука:', e);
+        alert('Ошибка воспроизведения звука. Проверьте настройки звука в браузере.');
+    });
+}
+
+// Загружаем настройки звука при запуске
+loadSoundSettings();
