@@ -65,14 +65,6 @@
                             <label for="sound-default">Стандартный</label>
                         </div>
                         <div class="sound-option">
-                            <input type="radio" id="sound-beep" name="alarm-sound" value="beep">
-                            <label for="sound-beep">Гудок</label>
-                        </div>
-                        <div class="sound-option">
-                            <input type="radio" id="sound-bell" name="alarm-sound" value="bell">
-                            <label for="sound-bell">Колокол</label>
-                        </div>
-                        <div class="sound-option">
                             <input type="radio" id="sound-custom" name="alarm-sound" value="custom">
                             <label for="sound-custom">Пользовательский</label>
                         </div>
@@ -84,11 +76,10 @@
                     </div>
                     
                     <button id="test-sound">Проверить звук</button>
+                    <button id="reset-to-default">Сбросить к стандартному</button>
                 </div>
                 
                 <audio id="alarm-sound" src="alarmSound.mp3" preload="auto"></audio>
-                <audio id="beep-sound" src="beep.mp3" preload="auto"></audio>
-                <audio id="bell-sound" src="bell.mp3" preload="auto"></audio>
             </div>
         </div>
     </main>
