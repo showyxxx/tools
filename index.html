@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Инструментарий</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Подключаем Markdown-стили -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.1.0/github-markdown.min.css">
 </head>
 <body>
     <header>
@@ -63,6 +65,25 @@
                 </div>
             </a>
         </div>
+        
+        <!-- Раздел истории изменений -->
+        <div class="changelog-container">
+            <div class="changelog-header">
+                <h2>История изменений</h2>
+                <button class="refresh-btn" id="refresh-changelog">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+                        <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+                    </svg>
+                    Обновить
+                </button>
+            </div>
+            <div class="changelog-content">
+                <div id="changelog-loading" class="loading">Загрузка истории изменений...</div>
+                <div id="changelog-content" class="markdown-body" style="display: none;"></div>
+                <div id="changelog-error" class="error" style="display: none;"></div>
+            </div>
+        </div>
     </main>
     
     <footer>
@@ -70,6 +91,56 @@
         <p>showyxx</p>
     </footer>
 
+    <!-- Подключаем библиотеку для преобразования Markdown в HTML -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.2/marked.min.js"></script>
     <script src="script.js"></script>
+    <script>
+        // Функция для загрузки и отображения changelog
+        async function loadChangelog() {
+            const loadingEl = document.getElementById('changelog-loading');
+            const contentEl = document.getElementById('changelog-content');
+            const errorEl = document.getElementById('changelog-error');
+            
+            // Показываем загрузку, скрываем контент и ошибку
+            loadingEl.style.display = 'block';
+            contentEl.style.display = 'none';
+            errorEl.style.display = 'none';
+            
+            try {
+                // Загружаем raw-контент из GitHub
+                const response = await fetch('https://raw.githubusercontent.com/showyxxx/tools/main/changelog.md');
+                
+                if (!response.ok) {
+                    throw new Error(`Ошибка загрузки: ${response.status} ${response.statusText}`);
+                }
+                
+                const markdown = await response.text();
+                
+                // Преобразуем Markdown в HTML
+                const html = marked.parse(markdown);
+                
+                // Вставляем результат
+                contentEl.innerHTML = html;
+                
+                // Показываем контент, скрываем загрузку
+                contentEl.style.display = 'block';
+                loadingEl.style.display = 'none';
+                
+            } catch (error) {
+                console.error('Ошибка загрузки changelog:', error);
+                
+                // Показываем сообщение об ошибке
+                errorEl.textContent = `Не удалось загрузить историю изменений: ${error.message}`;
+                errorEl.style.display = 'block';
+                loadingEl.style.display = 'none';
+            }
+        }
+        
+        // Загружаем changelog при загрузке страницы
+        document.addEventListener('DOMContentLoaded', loadChangelog);
+        
+        // Обновление по кнопке
+        document.getElementById('refresh-changelog').addEventListener('click', loadChangelog);
+    </script>
 </body>
 </html>
