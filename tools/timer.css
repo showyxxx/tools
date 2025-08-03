@@ -169,6 +169,89 @@
     border-bottom: none;
 }
 
+/* Стили для настроек звука */
+.sound-settings {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 15px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.sound-settings h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: var(--tool-accent);
+}
+
+.sound-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.sound-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    transition: var(--transition);
+}
+
+.sound-option:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.custom-sound {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.custom-sound input[type="file"] {
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--light);
+    min-width: 200px;
+}
+
+#reset-custom {
+    padding: 10px 15px;
+    border-radius: 10px;
+    border: none;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--light);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+#reset-custom:hover {
+    background: var(--danger);
+}
+
+#test-sound {
+    padding: 12px 25px;
+    border-radius: 30px;
+    border: none;
+    background: var(--tool-primary);
+    color: var(--darker);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    width: 100%;
+}
+
+#test-sound:hover {
+    background: var(--tool-secondary);
+    transform: translateY(-3px);
+}
+
 @media (max-width: 500px) {
     .timer-container {
         padding: 15px;
@@ -196,6 +279,10 @@
         font-size: 0.9rem;
         min-width: 120px;
     }
+    
+    .sound-options {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 350px) {
@@ -212,5 +299,9 @@
         padding: 8px 12px;
         font-size: 0.85rem;
         min-width: 70px;
+    }
+    
+    .custom-sound {
+        flex-direction: column;
     }
 }
