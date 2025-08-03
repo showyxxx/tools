@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор | Инструментарий</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="calculator.css">
+</head>
+<body>
+    <header>
+        <a href="../index.html" class="logo">
+            <div class="logo-icon">T</div>
+            <h1>Инструментарий</h1>
+        </a>
+        <div class="tool-header">
+            <h2><span>🧮</span> Улучшенный калькулятор</h2>
+        </div>
+    </header>
+    
+    <main class="tool-container">
+        <a href="../index.html" class="back-btn">← На главную</a>
+        
+        <div class="calculator">
+            <!-- История вычислений -->
+            <div class="calc-history" id="calc-history">
+                <h3>История вычислений</h3>
+                <div class="history-list" id="history-list"></div>
+                <button id="clear-history">Очистить историю</button>
+            </div>
+            
+            <!-- Основной дисплей -->
+            <div class="calc-display-container">
+                <div class="calc-expression" id="calc-expression"></div>
+                <input type="text" class="calc-input" id="calc-input" readonly value="0">
+            </div>
+            
+            <!-- Клавиатура калькулятора -->
+            <div class="calculator-buttons">
+                <button class="func-btn" data-action="clear">C</button>
+                <button class="func-btn" data-action="clear-entry">CE</button>
+                <button class="func-btn" data-action="backspace">⌫</button>
+                <button class="operator" data-operator="/">/</button>
+                
+                <button data-number="7">7</button>
+                <button data-number="8">8</button>
+                <button data-number="9">9</button>
+                <button class="operator" data-operator="*">×</button>
+                
+                <button data-number="4">4</button>
+                <button data-number="5">5</button>
+                <button data-number="6">6</button>
+                <button class="operator" data-operator="-">−</button>
+                
+                <button data-number="1">1</button>
+                <button data-number="2">2</button>
+                <button data-number="3">3</button>
+                <button class="operator" data-operator="+">+</button>
+                
+                <button class="wide-btn" data-number="0">0</button>
+                <button data-number=".">.</button>
+                <button class="operator equals" data-action="equals">=</button>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>Инструментарий — набор полезных инструментов для личного использования</p>
+        <p>showyxx</p>
+    </footer>
+
+    <script src="calculator.js"></script>
+</body>
+</html>

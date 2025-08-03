@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Таймер | Инструментарий</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="timer.css">
+</head>
+<body>
+    <header>
+        <a href="../index.html" class="logo">
+            <div class="logo-icon">T</div>
+            <h1>Инструментарий</h1>
+        </a>
+        <div class="tool-header">
+            <h2><span>⏱️</span> Таймер</h2>
+        </div>
+    </header>
+    
+    <main class="tool-container">
+        <a href="../index.html" class="back-btn">← На главную</a>
+        
+        <div class="timer-container">
+            <!-- Переключение режимов -->
+            <div class="timer-modes">
+                <button class="mode-btn active" data-mode="stopwatch">Секундомер</button>
+                <button class="mode-btn" data-mode="timer">Таймер</button>
+            </div>
+            
+            <!-- Секундомер -->
+            <div class="mode-content active" id="stopwatch-content">
+                <div class="timer-display" id="stopwatch-display">00:00:00</div>
+                <div class="timer-controls">
+                    <button class="timer-btn start" id="start-stopwatch">Старт</button>
+                    <button class="timer-btn stop" id="stop-stopwatch">Стоп</button>
+                    <button class="timer-btn reset" id="reset-stopwatch">Сброс</button>
+                    <button class="timer-btn" id="lap-stopwatch">Круг</button>
+                </div>
+                <div class="timer-laps" id="stopwatch-laps"></div>
+            </div>
+            
+            <!-- Таймер обратного отсчета -->
+            <div class="mode-content" id="timer-content">
+                <div class="timer-inputs">
+                    <input type="number" id="hours" min="0" max="23" value="0" placeholder="Чч">
+                    <span>:</span>
+                    <input type="number" id="minutes" min="0" max="59" value="10" placeholder="Мм">
+                    <span>:</span>
+                    <input type="number" id="seconds" min="0" max="59" value="0" placeholder="Сс">
+                </div>
+                <div class="timer-display" id="timer-display">10:00</div>
+                <div class="timer-controls">
+                    <button class="timer-btn start" id="start-timer">Старт</button>
+                    <button class="timer-btn stop" id="stop-timer">Пауза</button>
+                    <button class="timer-btn reset" id="reset-timer">Сброс</button>
+                </div>
+                <audio id="alarm-sound" src="alarmSound.mp3" preload="auto"></audio>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>Инструментарий — набор полезных инструментов для личного использования</p>
+        <p>showyxx</p>
+    </footer>
+
+    <script src="timer.js"></script>
+</body>
+</html>
