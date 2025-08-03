@@ -72,7 +72,7 @@ function updateStopwatch() {
     const milliseconds = Math.floor((stopwatchElapsedTime % 1000) / 10);
     const seconds = Math.floor((stopwatchElapsedTime / 1000) % 60);
     const minutes = Math.floor((stopwatchElapsedTime / (1000 * 60)) % 60);
-    const hours = Math.floor((stopwatchElapsedTime / (1000 * 60 * 60)) % 24;
+    const hours = Math.floor((stopwatchElapsedTime / (1000 * 60 * 60)) % 24);
     
     stopwatchDisplay.textContent = 
         `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(2, '0')}`;
@@ -301,3 +301,4 @@ function playAlarm() {
 
 // Загружаем настройки звука при запуске
 loadSoundSettings();
+
