@@ -91,11 +91,13 @@ const timerDisplay = document.getElementById('timer-display');
 const startTimerBtn = document.getElementById('start-timer');
 const stopTimerBtn = document.getElementById('stop-timer');
 const resetTimerBtn = document.getElementById('reset-timer');
+const timerContainer = document.querySelector('.timer-container');
 
 let timerInterval = null;
 let timerRunning = false;
 let totalSeconds = 0;
 let remainingSeconds = 0;
+let alarmPlaying = false; // Флаг для отслеживания воспроизведения сигнала
 
 // Инициализация таймера
 function initTimer() {
@@ -106,16 +108,18 @@ function initTimer() {
     totalSeconds = hours * 3600 + minutes * 60 + seconds;
     remainingSeconds = totalSeconds;
     updateTimerDisplay();
+    updateTimerButtons();
 }
 
 function startTimer() {
-    if (timerRunning) return;
+    if (timerRunning || alarmPlaying) return;
     
     if (remainingSeconds <= 0) {
         initTimer(); // Перезапускаем таймер, если время закончилось
     }
     
     timerRunning = true;
+    updateTimerButtons();
     timerInterval = setInterval(() => {
         remainingSeconds--;
         updateTimerDisplay();
@@ -130,25 +134,68 @@ function startTimer() {
 function stopTimer() {
     clearInterval(timerInterval);
     timerRunning = false;
+    updateTimerButtons();
 }
 
 function resetTimer() {
     stopTimer();
+    // Остановить звук при сбросе
+    if (alarmPlaying) {
+        stopAlarm();
+    }
     initTimer();
 }
 
-function updateTimerDisplay() {
-    const hours = Math.floor(remainingSeconds / 3600);
-    const minutes = Math.floor((remainingSeconds % 3600) / 60);
-    const seconds = remainingSeconds % 60;
+// Обновление состояния кнопок таймера
+function updateTimerButtons() {
+    if (timerRunning) {
+        startTimerBtn.disabled = true;
+        stopTimerBtn.disabled = false;
+        stopTimerBtn.textContent = "Пауза";
+    } else if (alarmPlaying) {
+        startTimerBtn.disabled = true;
+        stopTimerBtn.disabled = false;
+        stopTimerBtn.textContent = "Остановить звук";
+    } else {
+        startTimerBtn.disabled = false;
+        stopTimerBtn.disabled = remainingSeconds <= 0;
+        stopTimerBtn.textContent = "Пауза";
+    }
+}
+
+// Воспроизведение сигнала с зацикливанием
+function playAlarm() {
+    alarmPlaying = true;
+    timerContainer.classList.add('alarm-playing');
+    updateTimerButtons();
     
-    timerDisplay.textContent = 
-        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    currentSound.loop = true;
+    currentSound.currentTime = 0;
+    currentSound.play().catch(e => {
+        console.error('Ошибка воспроизведения звука:', e);
+        alert('Ошибка воспроизведения звука. Проверьте настройки звука в браузере.');
+    });
+}
+
+// Остановка сигнала
+function stopAlarm() {
+    currentSound.pause();
+    currentSound.currentTime = 0;
+    currentSound.loop = false;
+    alarmPlaying = false;
+    timerContainer.classList.remove('alarm-playing');
+    updateTimerButtons();
 }
 
 // Обработчики событий
 startTimerBtn.addEventListener('click', startTimer);
-stopTimerBtn.addEventListener('click', stopTimer);
+stopTimerBtn.addEventListener('click', function() {
+    if (alarmPlaying) {
+        stopAlarm();
+    } else {
+        stopTimer();
+    }
+});
 resetTimerBtn.addEventListener('click', resetTimer);
 
 // Валидация ввода
@@ -296,13 +343,50 @@ resetToDefaultBtn.addEventListener('click', function() {
     alert('Все звуковые настройки сброшены к стандартным');
 });
 
-// Проверка звука
+// Проверка звука с кнопкой остановки
+let testSoundPlaying = false;
+let testSoundTimeout = null;
+
 testSoundBtn.addEventListener('click', function() {
-    playAlarm();
+    if (testSoundPlaying) {
+        // Остановить проверку звука
+        clearTimeout(testSoundTimeout);
+        currentSound.pause();
+        currentSound.currentTime = 0;
+        testSoundPlaying = false;
+        this.textContent = "Проверить звук";
+    } else {
+        // Запустить проверку звука
+        testSoundPlaying = true;
+        this.textContent = "Остановить проверку";
+        
+        currentSound.loop = false;
+        currentSound.currentTime = 0;
+        currentSound.play().catch(e => {
+            console.error('Ошибка воспроизведения:', e);
+            testSoundPlaying = false;
+            this.textContent = "Проверить звук";
+        });
+        
+        // Автоматическое восстановление кнопки через 5 секунд
+        testSoundTimeout = setTimeout(() => {
+            if (testSoundPlaying) {
+                currentSound.pause();
+                currentSound.currentTime = 0;
+                testSoundPlaying = false;
+                testSoundBtn.textContent = "Проверить звук";
+            }
+        }, 5000);
+    }
 });
 
 // Воспроизведение звукового сигнала
 function playAlarm() {
+    alarmPlaying = true;
+    timerContainer.classList.add('alarm-playing');
+    updateTimerButtons();
+    
+    currentSound.loop = true;
     currentSound.currentTime = 0;
     currentSound.play().catch(e => {
         console.error('Ошибка воспроизведения звука:', e);
@@ -312,4 +396,3 @@ function playAlarm() {
 
 // Загружаем настройки звука при запуске
 loadSoundSettings();
-
