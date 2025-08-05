@@ -97,7 +97,34 @@ let timerInterval = null;
 let timerRunning = false;
 let totalSeconds = 0;
 let remainingSeconds = 0;
-let alarmPlaying = false; // Флаг для отслеживания воспроизведения сигнала
+let alarmPlaying = false;
+
+// Функция отображения времени
+function updateTimerDisplay() {
+    const hours = Math.floor(remainingSeconds / 3600);
+    const minutes = Math.floor((remainingSeconds % 3600) / 60);
+    const seconds = remainingSeconds % 60;
+    
+    timerDisplay.textContent = 
+        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+// Функция обновления состояния кнопок
+function updateTimerButtons() {
+    if (timerRunning) {
+        startTimerBtn.disabled = true;
+        stopTimerBtn.disabled = false;
+        stopTimerBtn.textContent = "Пауза";
+    } else if (alarmPlaying) {
+        startTimerBtn.disabled = true;
+        stopTimerBtn.disabled = false;
+        stopTimerBtn.textContent = "Остановить звук";
+    } else {
+        startTimerBtn.disabled = false;
+        stopTimerBtn.disabled = remainingSeconds <= 0;
+        stopTimerBtn.textContent = "Пауза";
+    }
+}
 
 // Инициализация таймера
 function initTimer() {
@@ -115,7 +142,7 @@ function startTimer() {
     if (timerRunning || alarmPlaying) return;
     
     if (remainingSeconds <= 0) {
-        initTimer(); // Перезапускаем таймер, если время закончилось
+        initTimer();
     }
     
     timerRunning = true;
@@ -144,23 +171,6 @@ function resetTimer() {
         stopAlarm();
     }
     initTimer();
-}
-
-// Обновление состояния кнопок таймера
-function updateTimerButtons() {
-    if (timerRunning) {
-        startTimerBtn.disabled = true;
-        stopTimerBtn.disabled = false;
-        stopTimerBtn.textContent = "Пауза";
-    } else if (alarmPlaying) {
-        startTimerBtn.disabled = true;
-        stopTimerBtn.disabled = false;
-        stopTimerBtn.textContent = "Остановить звук";
-    } else {
-        startTimerBtn.disabled = false;
-        stopTimerBtn.disabled = remainingSeconds <= 0;
-        stopTimerBtn.textContent = "Пауза";
-    }
 }
 
 // Воспроизведение сигнала с зацикливанием
@@ -379,20 +389,6 @@ testSoundBtn.addEventListener('click', function() {
         }, 5000);
     }
 });
-
-// Воспроизведение звукового сигнала
-function playAlarm() {
-    alarmPlaying = true;
-    timerContainer.classList.add('alarm-playing');
-    updateTimerButtons();
-    
-    currentSound.loop = true;
-    currentSound.currentTime = 0;
-    currentSound.play().catch(e => {
-        console.error('Ошибка воспроизведения звука:', e);
-        alert('Ошибка воспроизведения звука. Проверьте настройки звука в браузере.');
-    });
-}
 
 // Загружаем настройки звука при запуске
 loadSoundSettings();
