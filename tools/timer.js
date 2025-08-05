@@ -2,14 +2,9 @@
 const modeBtns = document.querySelectorAll('.mode-btn');
 modeBtns.forEach(btn => {
     btn.addEventListener('click', () => {
-        // Убираем активный класс со всех кнопок и контента
         modeBtns.forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.mode-content').forEach(c => c.classList.remove('active'));
-        
-        // Добавляем активный класс к выбранной кнопке
         btn.classList.add('active');
-        
-        // Показываем соответствующий контент
         const mode = btn.getAttribute('data-mode');
         document.getElementById(`${mode}-content`).classList.add('active');
     });
@@ -99,7 +94,7 @@ let totalSeconds = 0;
 let remainingSeconds = 0;
 let alarmPlaying = false;
 
-// Функция отображения времени
+// ==== ФУНКЦИИ ТАЙМЕРА ОБЪЯВЛЕНЫ В ПРАВИЛЬНОМ ПОРЯДКЕ ====
 function updateTimerDisplay() {
     const hours = Math.floor(remainingSeconds / 3600);
     const minutes = Math.floor((remainingSeconds % 3600) / 60);
@@ -109,7 +104,6 @@ function updateTimerDisplay() {
         `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
-// Функция обновления состояния кнопок
 function updateTimerButtons() {
     if (timerRunning) {
         startTimerBtn.disabled = true;
@@ -126,7 +120,6 @@ function updateTimerButtons() {
     }
 }
 
-// Инициализация таймера
 function initTimer() {
     const hours = parseInt(hoursInput.value) || 0;
     const minutes = parseInt(minutesInput.value) || 0;
@@ -166,14 +159,12 @@ function stopTimer() {
 
 function resetTimer() {
     stopTimer();
-    // Остановить звук при сбросе
     if (alarmPlaying) {
         stopAlarm();
     }
     initTimer();
 }
 
-// Воспроизведение сигнала с зацикливанием
 function playAlarm() {
     alarmPlaying = true;
     timerContainer.classList.add('alarm-playing');
@@ -187,7 +178,6 @@ function playAlarm() {
     });
 }
 
-// Остановка сигнала
 function stopAlarm() {
     currentSound.pause();
     currentSound.currentTime = 0;
@@ -196,6 +186,7 @@ function stopAlarm() {
     timerContainer.classList.remove('alarm-playing');
     updateTimerButtons();
 }
+// ==== КОНЕЦ ФУНКЦИЙ ТАЙМЕРА ====
 
 // Обработчики событий
 startTimerBtn.addEventListener('click', startTimer);
@@ -225,9 +216,6 @@ resetTimerBtn.addEventListener('click', resetTimer);
     });
 });
 
-// Инициализируем таймер при загрузке
-initTimer();
-
 // Настройки звукового сигнала
 const alarmSound = document.getElementById('alarm-sound');
 const soundRadios = document.querySelectorAll('input[name="alarm-sound"]');
@@ -241,17 +229,14 @@ const resetToDefaultBtn = document.getElementById('reset-to-default');
 let currentSound = alarmSound;
 let customSound = null;
 
-// Загружаем настройки звука из localStorage
 function loadSoundSettings() {
     const savedSoundType = localStorage.getItem('alarmSoundType');
     const customSoundData = localStorage.getItem('customAlarmSound');
     
     if (savedSoundType) {
-        // Выбираем сохраненный тип звука
         document.querySelector(`input[value="${savedSoundType}"]`).checked = true;
         selectSound(savedSoundType);
         
-        // Если есть пользовательский звук
         if (savedSoundType === 'custom' && customSoundData) {
             customSound = new Audio(customSoundData);
             currentSound = customSound;
@@ -259,12 +244,10 @@ function loadSoundSettings() {
     }
 }
 
-// Сохраняем настройки звука в localStorage
 function saveSoundSettings(soundType) {
     localStorage.setItem('alarmSoundType', soundType);
 }
 
-// Выбор звука
 function selectSound(soundType) {
     switch(soundType) {
         case 'default':
@@ -273,12 +256,9 @@ function selectSound(soundType) {
             break;
         case 'custom':
             customSoundSection.style.display = 'block';
-            // Используем пользовательский звук, если он был загружен
             if (customSound) currentSound = customSound;
             break;
     }
-    
-    // Сохраняем выбор пользователя
     saveSoundSettings(soundType);
 }
 
@@ -294,13 +274,11 @@ customSoundInput.addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (!file) return;
     
-    // Проверяем тип файла
     if (!file.type.startsWith('audio/')) {
         alert('Пожалуйста, выберите аудиофайл');
         return;
     }
     
-    // Проверяем размер файла (максимум 1 МБ)
     if (file.size > 1024 * 1024) {
         alert('Файл слишком большой. Максимальный размер 1 МБ.');
         return;
@@ -308,22 +286,16 @@ customSoundInput.addEventListener('change', function(e) {
     
     const reader = new FileReader();
     reader.onload = function(e) {
-        // Создаем новый аудиоэлемент
         customSound = new Audio(e.target.result);
-        
-        // Проверяем, можно ли воспроизвести файл
         customSound.oncanplay = () => {
-            // Сохраняем пользовательский звук в localStorage
             localStorage.setItem('customAlarmSound', e.target.result);
             currentSound = customSound;
             alert('Пользовательский звук успешно загружен!');
         };
-        
         customSound.onerror = () => {
             alert('Не удалось загрузить аудиофайл. Попробуйте другой файл.');
         };
     };
-    
     reader.readAsDataURL(file);
 });
 
@@ -338,18 +310,12 @@ resetCustomBtn.addEventListener('click', function() {
 
 // Полный сброс к стандартному звуку
 resetToDefaultBtn.addEventListener('click', function() {
-    // Сбрасываем выбор пользователя
     document.getElementById('sound-default').checked = true;
     selectSound('default');
-    
-    // Очищаем пользовательский звук
     customSoundInput.value = '';
     customSound = null;
     localStorage.removeItem('customAlarmSound');
-    
-    // Удаляем настройку типа звука
     localStorage.removeItem('alarmSoundType');
-    
     alert('Все звуковые настройки сброшены к стандартным');
 });
 
@@ -359,14 +325,12 @@ let testSoundTimeout = null;
 
 testSoundBtn.addEventListener('click', function() {
     if (testSoundPlaying) {
-        // Остановить проверку звука
         clearTimeout(testSoundTimeout);
         currentSound.pause();
         currentSound.currentTime = 0;
         testSoundPlaying = false;
         this.textContent = "Проверить звук";
     } else {
-        // Запустить проверку звука
         testSoundPlaying = true;
         this.textContent = "Остановить проверку";
         
@@ -378,7 +342,6 @@ testSoundBtn.addEventListener('click', function() {
             this.textContent = "Проверить звук";
         });
         
-        // Автоматическое восстановление кнопки через 5 секунд
         testSoundTimeout = setTimeout(() => {
             if (testSoundPlaying) {
                 currentSound.pause();
@@ -390,5 +353,8 @@ testSoundBtn.addEventListener('click', function() {
     }
 });
 
-// Загружаем настройки звука при запуске
-loadSoundSettings();
+// Инициализация при загрузке страницы
+window.addEventListener('DOMContentLoaded', () => {
+    initTimer();
+    loadSoundSettings();
+});
